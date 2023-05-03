@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    body {
+      background: linear-gradient(90deg, rgb(0, 0, 114), rgb(95, 0, 0));
+      font-family: system-ui;
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin: 0;
+    }
+    #user {
+      background-color: white;
+      border-radius: 100px;
+      padding: 10px;
+      font-size: 20px;
+      padding-left: 20px;
+      box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    #user.selected {
+      border: solid #ff6200 6px;
+    }
+    #post {
+      background-color: white;
+      border-radius: 10px;
+      font-size: 20px;
+      padding: 10px;
+      box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+      margin-top: 15px;
+    }
+  </style>
+  <body>
+    <!--Start Main Content-->
+    <div id="content" style="display: flex">
+      <!--Start User Container-->
+      <div style="width: 30%">
+        <!--Start Users Content-->
+        <div style="width: 90%; height: 100px; margin: 0 auto" id="users">
+        </div>
+        <!--End Users Content-->
+      </div>
+      <!--End User Container-->
+
+      <!--Start Posts Container-->
+      <div
+        id="posts-container"
+        style="width: 70%; background-color: rgb(236, 236, 236); padding:20px 0 ;"
+      >
+        <!--Start Posts-->
+        <div id="posts" style="width: 90%; margin: auto">
+        </div>
+        <!--End Posts-->
+      </div>
+      <!--End Posts Container-->
+    </div>
+    <!--End Main Content-->
+  </body>
+  <script>
+    function getPosts(userId) {
+      let request = new XMLHttpRequest();
+      request.open("GET", "https://jsonplaceholder.typicode.com/posts?userId="+userId);
+      request.responseType = "json";
+      request.send();
+      request.onload = () => {
+        if (request.status >= 200 && request.status < 300) {
+          let posts = request.response;
+          document.getElementById('posts').innerHTML = ''
+          for (post of posts) {
+            let content = `
+            <div id="post">
+              <h3>${post.title}</h3>
+              <h4>
+                ${post.body}
+              </h4>
+            </div>
+            `;
+            document.getElementById('posts').innerHTML += content
+          }
+        } else {
+          alert("error");
+        }
+      };
+    }
+
+    function getUsers() {
+      let request = new XMLHttpRequest();
+      request.open("GET", "https://jsonplaceholder.typicode.com/users");
+      request.responseType = "json";
+      request.send();
+      request.onload = () => {
+        if (request.status >= 200 && request.status < 300) {
+          let users = request.response;
+          document.getElementById('users').innerHTML = ''
+          for (user of users) {
+            let content = 
+            `
+              <div id="user" onClick='userClicked(${user.id}, this)'>
+                <h3>${user.name}</h3>
+                <h3>${user.email}</h3>
+              </div>
+            `;
+            document.getElementById('users').innerHTML += content
+          }
+        } else {
+          alert("error");
+        }
+      };
+    }
+
+    function userClicked(userId, el){
+      getPosts(userId);
+      if(document.getElementsByClassName('selected')[0]){
+        document.getElementsByClassName('selected')[0].classList.remove('selected')
+      }
+      el.classList.add('selected')
+    }
+
+    getPosts(1)
+    getUsers();
+
+
+  </script>
+</html>
